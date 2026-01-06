@@ -1,65 +1,69 @@
-warn("[Aikoware] FINAL FIX START")
+-- FAST BLATANT + AUTO FISH | DELTA SAFE | NO LIB
+warn("[Aikoware] FAST BLATANT AUTO FISH START")
 
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
 
--- LOAD LIBRARY
-local AIKO = loadstring(game:HttpGet(
-    "https://raw.githubusercontent.com/sadboy-dev/mulai/refs/heads/main/libary.lua"
-))()
+_G.AutoFishPerfect = false
 
--- WINDOW
-local Window = AIKO:Window({
-    Title = "Aikoware | Fish It",
-    Footer = "Delta Final Fix",
-    Version = 1
-})
+-- ================= GUI =================
+local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+gui.Name = "AikowareFast"
+gui.ResetOnSpawn = false
 
--- === GLOBAL FLAG ===
-_G.UltraPerfect = false
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.fromScale(0.26, 0.22)
+frame.Position = UDim2.fromScale(0.37, 0.39)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+frame.Active, frame.Draggable = true, true
 
--- === ADD TOGGLE LANGSUNG (TANPA TAB) ===
-Window:AddToggle({
-    Title = "Auto Perfect (Delta)",
-    Description = "Force server perfect",
-    Default = false,
-    Callback = function(v)
-        _G.UltraPerfect = v
+Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1,0,0.3,0)
+title.BackgroundTransparency = 1
+title.Text = "Aikoware | FAST"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextColor3 = Color3.new(1,1,1)
+
+local btn = Instance.new("TextButton", frame)
+btn.Size = UDim2.new(0.85,0,0.35,0)
+btn.Position = UDim2.fromScale(0.075,0.52)
+btn.Text = "AUTO FISH + PERFECT : OFF"
+btn.Font = Enum.Font.GothamBold
+btn.TextSize = 14
+btn.BackgroundColor3 = Color3.fromRGB(170,0,0)
+btn.TextColor3 = Color3.new(1,1,1)
+Instance.new("UICorner", btn).CornerRadius = UDim.new(0,8)
+
+btn.MouseButton1Click:Connect(function()
+    _G.AutoFishPerfect = not _G.AutoFishPerfect
+    if _G.AutoFishPerfect then
+        btn.Text = "AUTO FISH + PERFECT : ON"
+        btn.BackgroundColor3 = Color3.fromRGB(0,170,0)
+    else
+        btn.Text = "AUTO FISH + PERFECT : OFF"
+        btn.BackgroundColor3 = Color3.fromRGB(170,0,0)
     end
-})
+end)
 
--- === FORCE PERFECT (DELTA SAFE) ===
+-- ================= AUTO FISH =================
 task.spawn(function()
-    while task.wait(0.3) do
-        if _G.UltraPerfect then
-            pcall(function()
-                local net = ReplicatedStorage:FindFirstChild("Packages")
-                if not net then return end
+    while task.wait(0.2) do
+        if _G.AutoFishPerfect then
+            local char = LocalPlayer.Character
+            if not char then continue end
 
-                for _,v in pairs(net:GetDescendants()) do
-                    if v:IsA("RemoteEvent") then
-                        local n = v.Name:lower()
-                        if n:find("fish")
-                        or n:find("catch")
-                        or n:find("perfect")
-                        or n:find("complete") then
-                            v:FireServer("Perfect", true, 100)
-                        end
-                    end
-                end
-            end)
+            local tool = char:FindFirstChildOfClass("Tool")
+            if tool then
+                pcall(function()
+                    tool:Activate() -- cast / start fishing
+                end)
+            end
         end
     end
 end)
 
--- INFO
-Window:AddParagraph({
-    Title = "Status",
-    Content = "GUI aktif\nFitur aktif\nDelta compatible"
-})
-
-AIKO:MakeNotify({
-    Title = "Aikoware",
-    Description = "Loaded",
-    Content = "Fitur sudah muncul",
-    Delay = 4
-})
+-- ============
