@@ -514,6 +514,56 @@ function StopBlatantFishing()
     LocalPlayer:SetAttribute("Loading", false)
 end
 
+function StartUltraPerfect()
+    _G.UltraPerfect = true
+
+    pcall(function()
+        EquipToolFromHotbar:FireServer(1)
+    end)
+
+    LocalPlayer:SetAttribute("Loading", nil)
+
+    task.spawn(function()
+        task.wait(0.5) -- Wait for rod to equip
+        for _,func in pairs(getgc(true)) do
+            if type(func) == "function" then
+                local info = debug.getinfo(func)
+                if info and info.name then
+                    local name = info.name:lower()
+                    if name:find("perfect") or name:find("timing") or name:find("check") then
+                        pcall(function()
+                            hookfunction(func, function(...)
+                                if _G.UltraPerfect then
+                                    return true
+                                end
+                                return func(...)
+                            end)
+                        end)
+                    end
+                end
+            end
+        while task.wait(0.2) do
+            if _G.UltraPerfect then
+                pcall(function()
+                    for _,v in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+                        if v:IsA("RemoteEvent") then
+                            local n = v.Name:lower()
+                            if n:find("fish") or n:find("catch") or n:find("perfect") then
+                                v:FireServer("Perfect", true, 100)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end
+
+function StopUltraPerfect()
+    _G.UltraPerfect = false
+    LocalPlayer:SetAttribute("Loading", false)
+end
+
 function RecoveryFishing()
     task.spawn(function()
         pcall(function()
@@ -553,16 +603,17 @@ bts:AddToggle({
     end
 })
 
-_G.UltraPerfect = false
+
 
 bts:AddToggle({
     Title = "ULTRA Auto Perfect",
+    _G.UltraPerfect = false,
     Default = false,
     Callback = function(enabled)
         if enabled then
-            _G.UltraPerfect = true
+            StartUltraPerfect()
         else
-            _G.UltraPerfect = false
+            StopUltraPerfect()
     end
 })
 
@@ -2461,40 +2512,8 @@ AIKO:MakeNotify({
     Delay = 5
 })
 
-task.spawn(function()
-    for _,func in pairs(getgc(true)) do
-        if type(func) == "function" then
-            local info = debug.getinfo(func)
-            if info and info.name then
-                local name = info.name:lower()
-                if name:find("perfect") or name:find("timing") or name:find("check") then
-                    pcall(function()
-                        hookfunction(func, function(...)
-                            if _G.UltraPerfect then
-                                return true
-                            end
-                            return func(...)
-                        end)
-                    end)
-                end
-            end
-        end
-    end
-end)
+
 
 task.spawn(function()
-    while task.wait(0.2) do
-        if _G.UltraPerfect then
-            pcall(function()
-                for _,v in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
-                    if v:IsA("RemoteEvent") then
-                        local n = v.Name:lower()
-                        if n:find("fish") or n:find("catch") or n:find("perfect") then
-                            v:FireServer("Perfect", true, 100)
-                        end
-                    end
-                end
-            end)
-        end
-    end
+    
 end)
