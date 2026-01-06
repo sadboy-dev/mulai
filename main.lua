@@ -105,4 +105,112 @@ local title = Instance.new("TextLabel", top)
 title.Size = UDim2.new(1,-80,1,0)
 title.Position = UDim2.new(0,10,0,0)
 title.Text = "Delta GUI"
-title.TextColo
+title.TextColor3 = Color3.new(1,1,1)
+title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Minimize
+local mini = Instance.new("TextButton", top)
+mini.Size = UDim2.new(0,30,0,30)
+mini.Position = UDim2.new(1,-60,0,0)
+mini.Text = "-"
+mini.BackgroundColor3 = Color3.fromRGB(90,90,90)
+mini.TextColor3 = Color3.new(1,1,1)
+mini.Active = true
+
+-- Close (FULL CLEAN)
+local close = Instance.new("TextButton", top)
+close.Size = UDim2.new(0,30,0,30)
+close.Position = UDim2.new(1,-30,0,0)
+close.Text = "X"
+close.BackgroundColor3 = Color3.fromRGB(180,0,0)
+close.TextColor3 = Color3.new(1,1,1)
+close.Active = true
+
+-- Left Menu
+local left = Instance.new("Frame", main)
+left.Position = UDim2.new(0,0,0,30)
+left.Size = UDim2.new(0,120,1,-30)
+left.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+-- Right Content
+local right = Instance.new("Frame", main)
+right.Position = UDim2.new(0,120,0,30)
+right.Size = UDim2.new(1,-120,1,-30)
+right.BackgroundColor3 = Color3.fromRGB(40,40,40)
+
+local label = Instance.new("TextLabel", right)
+label.Size = UDim2.new(1,0,1,0)
+label.BackgroundTransparency = 1
+label.TextScaled = true
+label.TextColor3 = Color3.new(1,1,1)
+label.Text = "Pilih Menu"
+
+-- 9 Menu
+for i = 1,9 do
+    local btn = Instance.new("TextButton", left)
+    btn.Size = UDim2.new(1,-10,0,25)
+    btn.Position = UDim2.new(0,5,0,(i-1)*27+5)
+    btn.Text = "Menu "..i
+    btn.BackgroundColor3 = Color3.fromRGB(55,55,55)
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Active = true
+
+    connect(btn.Activated, function()
+        label.Text = "Isi Menu "..i
+    end)
+end
+
+-- Minimize → Floating
+connect(mini.Activated, function()
+    main.Visible = false
+    floatBtn.Visible = true
+end)
+
+-- Floating → Open
+connect(floatBtn.Activated, function()
+    main.Visible = true
+    floatBtn.Visible = false
+end)
+
+-- Close → FULL CLEANUP
+connect(close.Activated, function()
+    cleanup()
+    gui:Destroy()
+end)
+
+-- Drag Main GUI
+do
+    local dragging, dragStart, startPos
+
+    connect(top.InputBegan, function(input)
+        if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = main.Position
+        end
+    end)
+
+    connect(top.InputEnded, function(input)
+        if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+
+    connect(UIS.InputChanged, function(input)
+        if dragging and (
+            input.UserInputType == Enum.UserInputType.Touch
+            or input.UserInputType == Enum.UserInputType.MouseMovement
+        ) then
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+end
