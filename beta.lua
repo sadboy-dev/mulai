@@ -1,9 +1,6 @@
--- Aikoware DELTA FIX (UI + Feature MUNCUL)
-warn("[Aikoware] Delta fix start")
+warn("[Aikoware] FINAL FIX START")
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local LocalPlayer = Players.LocalPlayer
 
 -- LOAD LIBRARY
 local AIKO = loadstring(game:HttpGet(
@@ -13,42 +10,39 @@ local AIKO = loadstring(game:HttpGet(
 -- WINDOW
 local Window = AIKO:Window({
     Title = "Aikoware | Fish It",
-    Footer = "Delta Edition",
+    Footer = "Delta Final Fix",
     Version = 1
 })
 
--- TAB (INI YANG BENAR)
-local Fishing = Window:AddTab("Fishing")
-local Blatant = Window:AddTab("Blatant")
-
--- === ULTRA AUTO PERFECT (DELTA SAFE) ===
+-- === GLOBAL FLAG ===
 _G.UltraPerfect = false
 
-Blatant:AddToggle({
+-- === ADD TOGGLE LANGSUNG (TANPA TAB) ===
+Window:AddToggle({
     Title = "Auto Perfect (Delta)",
+    Description = "Force server perfect",
     Default = false,
     Callback = function(v)
         _G.UltraPerfect = v
     end
 })
 
--- FORCE PERFECT VIA REMOTE (DELTA OK)
+-- === FORCE PERFECT (DELTA SAFE) ===
 task.spawn(function()
-    while task.wait(0.25) do
+    while task.wait(0.3) do
         if _G.UltraPerfect then
             pcall(function()
-                local net = ReplicatedStorage.Packages
-                    ._Index["sleitnick_net@0.2.0"]
-                    .net
+                local net = ReplicatedStorage:FindFirstChild("Packages")
+                if not net then return end
 
-                for _,r in pairs(net:GetChildren()) do
-                    if r:IsA("RemoteEvent") then
-                        local n = r.Name:lower()
+                for _,v in pairs(net:GetDescendants()) do
+                    if v:IsA("RemoteEvent") then
+                        local n = v.Name:lower()
                         if n:find("fish")
                         or n:find("catch")
                         or n:find("perfect")
                         or n:find("complete") then
-                            r:FireServer("Perfect", true, 100)
+                            v:FireServer("Perfect", true, 100)
                         end
                     end
                 end
@@ -57,14 +51,15 @@ task.spawn(function()
     end
 end)
 
-Fishing:AddParagraph({
-    Title = "Info",
-    Content = "Versi Delta\nUI & fitur aktif\nAuto Perfect via server"
+-- INFO
+Window:AddParagraph({
+    Title = "Status",
+    Content = "GUI aktif\nFitur aktif\nDelta compatible"
 })
 
 AIKO:MakeNotify({
     Title = "Aikoware",
     Description = "Loaded",
-    Content = "Fitur sudah aktif",
+    Content = "Fitur sudah muncul",
     Delay = 4
 })
