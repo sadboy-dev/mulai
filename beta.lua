@@ -556,7 +556,7 @@ bts:AddToggle({
 _G.UltraPerfect = false
 
 bts:AddToggle({
-    Name = "ULTRA Auto Perfect",
+    Title = "ULTRA Auto Perfect",
     Default = false,
     Callback = function(v)
         _G.UltraPerfect = v
