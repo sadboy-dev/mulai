@@ -336,13 +336,13 @@ fsh:AddToggle({
 })
 
 fsh:AddButton({
-    Title = "Manual Fix Stuck",
+    Title = "Recovery Fishing",
     Content = "",
     Callback = function()
         StartLegitFishing(false)
 
         AIKO:MakeNotify({
-            Title = "Aikoware",
+            Title = "Jriik",
             Description = "| Manual Fix Stuck",
             Content = "Stuck Fixed",
             Delay = 2
@@ -554,27 +554,27 @@ bts:AddToggle({
 })
 
 bts:AddInput({
-    Title = "Fishing Delay",
-    Placeholder = "1.1",
-    Callback = function(value)
-        SetFishingDelay(value)
-    end
-})
-
-bts:AddInput({
-    Title = "Reel Delay",
+    Title = "Delay Reel",
     Placeholder = "1.9",
     Callback = function(value)
         SetReelDelay(value)
     end
 })
 
+bts:AddInput({
+    Title = "Delay Fishing",
+    Placeholder = "1.1",
+    Callback = function(value)
+        SetFishingDelay(value)
+    end
+})
+
 bts:AddButton({
-    Title = "Manual Fix Stuck",
+    Title = "Recovery Fishing",
     Callback = function()
         RecoveryFishing()
         AIKO:MakeNotify({
-            Title = "Aikoware",
+            Title = "Jriik",
             Description = "| Manual Fix",
             Content = "Stuck Fixed",
             Delay = 2
@@ -676,14 +676,6 @@ bts2:AddToggle({
 })
 
 bts2:AddInput({
-    Title = "Fishing Delay",
-    Placeholder = "1.1",
-    Callback = function(value)
-        SetFishingDelay2(value)
-    end
-})
-
-bts2:AddInput({
     Title = "Reel Delay",
     Placeholder = "1.9",
     Callback = function(value)
@@ -691,12 +683,20 @@ bts2:AddInput({
     end
 })
 
+bts2:AddInput({
+    Title = "Fishing Delay",
+    Placeholder = "1.1",
+    Callback = function(value)
+        SetFishingDelay2(value)
+    end
+})
+
 bts2:AddButton({
-    Title = "Manual Fix Stuck",
+    Title = "Recovery Fishing",
     Callback = function()
         RecoveryFishing2()
         AIKO:MakeNotify({
-            Title = "Aikoware",
+            Title = "Jriik",
             Description = "| Manual Fix",
             Content = "Stuck Fixed",
             Delay = 2
