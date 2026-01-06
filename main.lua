@@ -1,8 +1,7 @@
--- DELTA GUI CLEAN EXIT
--- CLOSE = FULL CLEANUP
+-- DELTA GUI CLEAN EXIT + FISHING MENU
 
 local UIS = game:GetService("UserInputService")
-local connections = {} -- simpan semua connection
+local connections = {}
 
 local function connect(signal, func)
     local c = signal:Connect(func)
@@ -27,18 +26,17 @@ if not parentGui then
 end
 
 pcall(function()
-    parentGui.DeltaCleanGUI:Destroy()
+    parentGui.DeltaFishingGUI:Destroy()
 end)
 
 -- ScreenGui
 local gui = Instance.new("ScreenGui")
-gui.Name = "DeltaCleanGUI"
+gui.Name = "DeltaFishingGUI"
 gui.ResetOnSpawn = false
 gui.Parent = parentGui
 
--- ================= FLOATING BUTTON =================
-local floatBtn = Instance.new("TextButton")
-floatBtn.Parent = gui
+-- Floating Button
+local floatBtn = Instance.new("TextButton", gui)
 floatBtn.Size = UDim2.new(0,50,0,50)
 floatBtn.Position = UDim2.new(0,20,0.5,-25)
 floatBtn.Text = "OPEN"
@@ -48,46 +46,32 @@ floatBtn.TextColor3 = Color3.new(1,1,1)
 floatBtn.Visible = false
 floatBtn.Active = true
 floatBtn.ZIndex = 10
-
 Instance.new("UICorner", floatBtn).CornerRadius = UDim.new(1,0)
 
 -- Drag Floating
 do
     local dragging, dragStart, startPos
-
-    connect(floatBtn.InputBegan, function(input)
-        if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+    connect(floatBtn.InputBegan, function(i)
+        if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            dragStart = input.Position
+            dragStart = i.Position
             startPos = floatBtn.Position
         end
     end)
-
-    connect(floatBtn.InputEnded, function(input)
-        if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+    connect(floatBtn.InputEnded, function(i)
+        if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
     end)
-
-    connect(UIS.InputChanged, function(input)
-        if dragging and (
-            input.UserInputType == Enum.UserInputType.Touch
-            or input.UserInputType == Enum.UserInputType.MouseMovement
-        ) then
-            local delta = input.Position - dragStart
-            floatBtn.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
+    connect(UIS.InputChanged, function(i)
+        if dragging then
+            local d = i.Position - dragStart
+            floatBtn.Position = UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y)
         end
     end)
 end
 
--- ================= MAIN GUI =================
+-- Main GUI
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0,480,0,280)
 main.Position = UDim2.new(0.5,-240,0.5,-140)
@@ -109,7 +93,6 @@ title.TextColor3 = Color3.new(1,1,1)
 title.BackgroundTransparency = 1
 title.TextXAlignment = Enum.TextXAlignment.Left
 
--- Minimize
 local mini = Instance.new("TextButton", top)
 mini.Size = UDim2.new(0,30,0,30)
 mini.Position = UDim2.new(1,-60,0,0)
@@ -118,7 +101,6 @@ mini.BackgroundColor3 = Color3.fromRGB(90,90,90)
 mini.TextColor3 = Color3.new(1,1,1)
 mini.Active = true
 
--- Close (FULL CLEAN)
 local close = Instance.new("TextButton", top)
 close.Size = UDim2.new(0,30,0,30)
 close.Position = UDim2.new(1,-30,0,0)
@@ -139,78 +121,104 @@ right.Position = UDim2.new(0,120,0,30)
 right.Size = UDim2.new(1,-120,1,-30)
 right.BackgroundColor3 = Color3.fromRGB(40,40,40)
 
-local label = Instance.new("TextLabel", right)
-label.Size = UDim2.new(1,0,1,0)
-label.BackgroundTransparency = 1
-label.TextScaled = true
-label.TextColor3 = Color3.new(1,1,1)
-label.Text = "Pilih Menu"
+-- Clear Right Panel
+local function clearRight()
+    for _,v in pairs(right:GetChildren()) do
+        if not v:IsA("UIListLayout") then
+            v:Destroy()
+        end
+    end
+end
 
--- 9 Menu
+-- Show Fishing Features
+local function showFishing()
+    clearRight()
+
+    local layout = Instance.new("UIListLayout", right)
+    layout.Padding = UDim.new(0,8)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.VerticalAlignment = Enum.VerticalAlignment.Center
+
+    local features = {
+        "Auto Fish",
+        "Instant Catch",
+        "No Delay",
+        "Auto Sell",
+        "Infinite Bait",
+        "Safe Mode"
+    }
+
+    for _,name in ipairs(features) do
+        local btn = Instance.new("TextButton", right)
+        btn.Size = UDim2.new(0.8,0,0,30)
+        btn.Text = name
+        btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+        btn.TextColor3 = Color3.new(1,1,1)
+        btn.Active = true
+
+        connect(btn.Activated, function()
+            btn.Text = name.." [ON]"
+        end)
+    end
+end
+
+-- Menu Buttons (9)
 for i = 1,9 do
     local btn = Instance.new("TextButton", left)
     btn.Size = UDim2.new(1,-10,0,25)
     btn.Position = UDim2.new(0,5,0,(i-1)*27+5)
-    btn.Text = "Menu "..i
     btn.BackgroundColor3 = Color3.fromRGB(55,55,55)
     btn.TextColor3 = Color3.new(1,1,1)
     btn.Active = true
 
-    connect(btn.Activated, function()
-        label.Text = "Isi Menu "..i
-    end)
+    if i == 1 then
+        btn.Text = "Fishing"
+        connect(btn.Activated, showFishing)
+    else
+        btn.Text = "Menu "..i
+        connect(btn.Activated, function()
+            clearRight()
+        end)
+    end
 end
 
--- Minimize → Floating
+-- Minimize
 connect(mini.Activated, function()
     main.Visible = false
     floatBtn.Visible = true
 end)
 
--- Floating → Open
+-- Floating Open
 connect(floatBtn.Activated, function()
     main.Visible = true
     floatBtn.Visible = false
 end)
 
--- Close → FULL CLEANUP
+-- Close = FULL CLEAN
 connect(close.Activated, function()
     cleanup()
     gui:Destroy()
 end)
 
--- Drag Main GUI
+-- Drag Main
 do
     local dragging, dragStart, startPos
-
-    connect(top.InputBegan, function(input)
-        if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+    connect(top.InputBegan, function(i)
+        if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            dragStart = input.Position
+            dragStart = i.Position
             startPos = main.Position
         end
     end)
-
-    connect(top.InputEnded, function(input)
-        if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+    connect(top.InputEnded, function(i)
+        if i.UserInputType == Enum.UserInputType.Touch or i.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
     end)
-
-    connect(UIS.InputChanged, function(input)
-        if dragging and (
-            input.UserInputType == Enum.UserInputType.Touch
-            or input.UserInputType == Enum.UserInputType.MouseMovement
-        ) then
-            local delta = input.Position - dragStart
-            main.Position = UDim2.new(
-                startPos.X.Scale,
-                startPos.X.Offset + delta.X,
-                startPos.Y.Scale,
-                startPos.Y.Offset + delta.Y
-            )
+    connect(UIS.InputChanged, function(i)
+        if dragging then
+            local d = i.Position - dragStart
+            main.Position = UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y)
         end
     end)
 end
