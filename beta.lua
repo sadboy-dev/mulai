@@ -98,6 +98,16 @@ local Fishing = Window:AddTab({
     Icon = "rbxassetid://100067447000453"
 })
 
+_G.UltraPerfect = false
+
+BlatantTab:AddToggle({
+    Name = "ULTRA Auto Perfect",
+    Default = false,
+    Callback = function(v)
+        _G.UltraPerfect = v
+    end
+})
+
 local Shop = Window:AddTab({
     Name = "Shop",
     Icon = "piggy-bank"
@@ -128,21 +138,6 @@ local Misc = Window:AddTab({
     Icon = "snowflake"
 })
 
-local BlatantTab = Window:MakeTab({
-    Name = "Blatant",
-    Icon = "rbxassetid://...",
-    PremiumOnly = false
-})
-
-_G.UltraPerfect = false
-
-BlatantTab:AddToggle({
-    Name = "ULTRA Auto Perfect",
-    Default = false,
-    Callback = function(v)
-        _G.UltraPerfect = v
-    end
-})
 local dcsec = Home:AddSection("Support", true)
 
 dcsec:AddParagraph({
@@ -489,34 +484,24 @@ function FastestFishing()
 
         local serverTime = workspace:GetServerTimeNow()
 
-        local success, _, rodGUID = pcall(function()
-            return ChargeFishingRod:InvokeServer(serverTime)
+        pcall(function()
+            ChargeFishingRod:InvokeServer(serverTime)
         end)
 
-        if success and typeof(rodGUID) == "number" then
-            pcall(function()
-                RequestFishingMinigame:InvokeServer(-1, 0.999, rodGUID)
-            end)
+        pcall(function()
+            RequestFishingMinigame:InvokeServer(-1, 0.999)
+        end)
 
-            task.wait(_G.FishingDelay)
+        task.wait(_G.FishingDelay)
 
-            pcall(function()
-                FishingCompleted:FireServer()
-            end)
-        end
+        pcall(function()
+            FishingCompleted:FireServer()
+        end)
     end)
 end
 
 function StartBlatantFishing()
     _G.FBlatant = true
-    _G.UltraPerfect = false
-    BlatantTab:AddToggle({
-        Name = "ULTRA Auto Perfect",
-        Default = false,
-        Callback = function(v)
-        _G.UltraPerfect = v
-        end
-    })
 
     pcall(function()
         EquipToolFromHotbar:FireServer(1)
@@ -2519,28 +2504,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
         for _,v in pairs(gui:GetDescendants()) do
             if v:IsA("Frame") and v.Name:lower():find("timing") then
                 v.Visible = false
-            end
-        end
-    end
-end)
-
--- // ULTRA BLATANT AUTO PERFECT (CLIENT HOOK)
-task.spawn(function()
-    for _,func in pairs(getgc(true)) do
-        if type(func) == "function" then
-            local info = debug.getinfo(func)
-            if info and info.name then
-                local name = info.name:lower()
-                if name:find("perfect") or name:find("timing") or name:find("check") then
-                    pcall(function()
-                        hookfunction(func, function(...)
-                            if _G.UltraPerfect then
-                                return true
-                            end
-                            return func(...)
-                        end)
-                    end)
-                end
             end
         end
     end
