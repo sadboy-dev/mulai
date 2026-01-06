@@ -558,8 +558,11 @@ _G.UltraPerfect = false
 bts:AddToggle({
     Title = "ULTRA Auto Perfect",
     Default = false,
-    Callback = function(v)
-        _G.UltraPerfect = v
+    Callback = function(enabled)
+        if enabled then
+            _G.UltraPerfect = true
+        else
+            _G.UltraPerfect = false
     end
 })
 
