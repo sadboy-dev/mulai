@@ -1,6 +1,8 @@
--- DELTA GUI FINAL FIX
--- BUTTONS WORKING (Activated)
+-- DELTA GUI 9 MENU + DRAG FIX
 
+local UIS = game:GetService("UserInputService")
+
+-- Parent GUI (Delta safe)
 local parentGui
 pcall(function()
     if gethui then parentGui = gethui() end
@@ -10,11 +12,12 @@ if not parentGui then
 end
 
 pcall(function()
-    parentGui.DeltaFinalGUI:Destroy()
+    parentGui.DeltaDragGUI:Destroy()
 end)
 
+-- ScreenGui
 local gui = Instance.new("ScreenGui")
-gui.Name = "DeltaFinalGUI"
+gui.Name = "DeltaDragGUI"
 gui.ResetOnSpawn = false
 gui.Parent = parentGui
 
@@ -28,7 +31,7 @@ main.BorderSizePixel = 0
 main.Active = true
 main.ZIndex = 1
 
--- Top Bar
+-- Top Bar (Drag Area)
 local top = Instance.new("Frame")
 top.Parent = main
 top.Size = UDim2.new(1,0,0,30)
@@ -75,7 +78,6 @@ left.Parent = main
 left.Position = UDim2.new(0,0,0,30)
 left.Size = UDim2.new(0,120,1,-30)
 left.BackgroundColor3 = Color3.fromRGB(25,25,25)
-left.ZIndex = 1
 
 -- Right Content
 local right = Instance.new("Frame")
@@ -83,7 +85,6 @@ right.Parent = main
 right.Position = UDim2.new(0,120,0,30)
 right.Size = UDim2.new(1,-120,1,-30)
 right.BackgroundColor3 = Color3.fromRGB(40,40,40)
-right.ZIndex = 1
 
 local label = Instance.new("TextLabel")
 label.Parent = right
@@ -92,10 +93,9 @@ label.BackgroundTransparency = 1
 label.TextScaled = true
 label.TextColor3 = Color3.new(1,1,1)
 label.Text = "Pilih Menu"
-label.ZIndex = 2
 
--- Menu Buttons
-for i = 1,10 do
+-- 9 Menu Buttons
+for i = 1,9 do
     local btn = Instance.new("TextButton")
     btn.Parent = left
     btn.Size = UDim2.new(1,-10,0,25)
@@ -104,16 +104,14 @@ for i = 1,10 do
     btn.BackgroundColor3 = Color3.fromRGB(55,55,55)
     btn.TextColor3 = Color3.new(1,1,1)
     btn.Active = true
-    btn.ZIndex = 2
 
     btn.Activated:Connect(function()
-        label.Text = "Isi Menu "..i
+        label.Text = "Isi dari Menu "..i
     end)
 end
 
--- FUNCTIONS
+-- Minimize
 local minimized = false
-
 mini.Activated:Connect(function()
     minimized = not minimized
     left.Visible = not minimized
@@ -121,6 +119,47 @@ mini.Activated:Connect(function()
     main.Size = minimized and UDim2.new(0,480,0,30) or UDim2.new(0,480,0,280)
 end)
 
+-- Close
 close.Activated:Connect(function()
     gui:Destroy()
+end)
+
+-- ================= DRAG SYSTEM =================
+local dragging = false
+local dragStart
+local startPos
+
+local function updateDrag(input)
+    local delta = input.Position - dragStart
+    main.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+top.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+
+top.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    ) then
+        updateDrag(input)
+    end
 end)
