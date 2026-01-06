@@ -1,103 +1,94 @@
---// Fishing GUI FIXED VERSION
+--// DELTA FRIENDLY FISHING GUI
 
-local Player = game.Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui")
+local plr = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "FishingGUI"
+gui.Parent = plr:WaitForChild("PlayerGui")
+gui.ResetOnSpawn = false
 
-if PlayerGui:FindFirstChild("FishingGUI") then
-    PlayerGui.FishingGUI:Destroy()
-end
-
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "FishingGUI"
-ScreenGui.Parent = PlayerGui
-ScreenGui.ResetOnSpawn = false
-
-local Main = Instance.new("Frame")
-Main.Parent = ScreenGui
-Main.Size = UDim2.new(0, 620, 0, 380)
-Main.Position = UDim2.new(0.5, -310, 0.5, -190)
-Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Main.BorderSizePixel = 0
-Main.Active = true
-Main.Draggable = true
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
+-- Main Frame
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0, 600, 0, 360)
+main.Position = UDim2.new(0.5, -300, 0.5, -180)
+main.BackgroundColor3 = Color3.fromRGB(25,25,25)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
 
 -- Sidebar
-local Sidebar = Instance.new("Frame", Main)
-Sidebar.Size = UDim2.new(0, 150, 1, 0)
-Sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-Sidebar.BorderSizePixel = 0
+local side = Instance.new("Frame")
+side.Parent = main
+side.Size = UDim2.new(0, 150, 1, 0)
+side.BackgroundColor3 = Color3.fromRGB(18,18,18)
+side.BorderSizePixel = 0
 
-local Title = Instance.new("TextLabel", Sidebar)
-Title.Size = UDim2.new(1, 0, 0, 50)
-Title.Text = "Fishing"
-Title.TextColor3 = Color3.fromRGB(0, 170, 255)
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 20
-Title.BackgroundTransparency = 1
+-- Title
+local title = Instance.new("TextLabel")
+title.Parent = side
+title.Size = UDim2.new(1,0,0,50)
+title.Text = "Fishing"
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 22
+title.TextColor3 = Color3.fromRGB(0,170,255)
+title.BackgroundTransparency = 1
 
 -- Content
-local Content = Instance.new("Frame", Main)
-Content.Position = UDim2.new(0, 160, 0, 15)
-Content.Size = UDim2.new(1, -175, 1, -30)
-Content.BackgroundTransparency = 1
+local content = Instance.new("Frame")
+content.Parent = main
+content.Position = UDim2.new(0,160,0,20)
+content.Size = UDim2.new(1,-170,1,-40)
+content.BackgroundTransparency = 1
 
-local List = Instance.new("UIListLayout", Content)
-List.Padding = UDim.new(0, 10)
+-- Toggle creator (manual Y)
+local function Toggle(text, y)
+    local frame = Instance.new("Frame")
+    frame.Parent = content
+    frame.Size = UDim2.new(1,0,0,40)
+    frame.Position = UDim2.new(0,0,0,y)
+    frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    frame.BorderSizePixel = 0
 
--- Toggle creator
-local function CreateToggle(text)
-    local Toggle = Instance.new("Frame")
-    Toggle.Size = UDim2.new(1, 0, 0, 45)
-    Toggle.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    Toggle.BorderSizePixel = 0
-    Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 8)
+    local label = Instance.new("TextLabel")
+    label.Parent = frame
+    label.Position = UDim2.new(0,10,0,0)
+    label.Size = UDim2.new(1,-80,1,0)
+    label.Text = text
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 16
+    label.TextColor3 = Color3.fromRGB(220,220,220)
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.BackgroundTransparency = 1
 
-    local Label = Instance.new("TextLabel", Toggle)
-    Label.Text = text
-    Label.Font = Enum.Font.Gotham
-    Label.TextSize = 14
-    Label.TextColor3 = Color3.fromRGB(220, 220, 220)
-    Label.BackgroundTransparency = 1
-    Label.Position = UDim2.new(0, 15, 0, 0)
-    Label.Size = UDim2.new(1, -100, 1, 0)
-    Label.TextXAlignment = Enum.TextXAlignment.Left
+    local btn = Instance.new("TextButton")
+    btn.Parent = frame
+    btn.Size = UDim2.new(0,50,0,22)
+    btn.Position = UDim2.new(1,-60,0.5,-11)
+    btn.Text = "OFF"
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 14
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+    btn.BorderSizePixel = 0
 
-    local Button = Instance.new("TextButton", Toggle)
-    Button.Size = UDim2.new(0, 50, 0, 22)
-    Button.Position = UDim2.new(1, -65, 0.5, -11)
-    Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    Button.Text = ""
-    Button.BorderSizePixel = 0
-    Instance.new("UICorner", Button).CornerRadius = UDim.new(1, 0)
-
-    local Circle = Instance.new("Frame", Button)
-    Circle.Size = UDim2.new(0, 18, 0, 18)
-    Circle.Position = UDim2.new(0, 2, 0.5, -9)
-    Circle.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    Circle.BorderSizePixel = 0
-    Instance.new("UICorner", Circle).CornerRadius = UDim.new(1, 0)
-
-    local Enabled = false
-    Button.MouseButton1Click:Connect(function()
-        Enabled = not Enabled
-        if Enabled then
-            Button.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-            Circle.Position = UDim2.new(1, -20, 0.5, -9)
+    local on = false
+    btn.MouseButton1Click:Connect(function()
+        on = not on
+        if on then
+            btn.Text = "ON"
+            btn.BackgroundColor3 = Color3.fromRGB(0,170,255)
         else
-            Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-            Circle.Position = UDim2.new(0, 2, 0.5, -9)
+            btn.Text = "OFF"
+            btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
         end
-        print(text, Enabled)
+        print(text, on)
     end)
-
-    Toggle.Parent = Content
 end
 
 -- Toggles
-CreateToggle("Show Real Ping")
-CreateToggle("Show Fishing Panel")
-CreateToggle("Auto Equip Rod")
-CreateToggle("No Fishing Animations")
-CreateToggle("Walk on Water")
-CreateToggle("Freeze Player")
+Toggle("Show Real Ping", 0)
+Toggle("Show Fishing Panel", 50)
+Toggle("Auto Equip Rod", 100)
+Toggle("No Fishing Animations", 150)
+Toggle("Walk on Water", 200)
+Toggle("Freeze Player", 250)
