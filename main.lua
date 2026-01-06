@@ -1,94 +1,165 @@
---// DELTA FRIENDLY FISHING GUI
+-- Memuat UI Library (Rayfield) yang kompatibel dengan Delta
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
-local plr = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui")
-gui.Name = "FishingGUI"
-gui.Parent = plr:WaitForChild("PlayerGui")
-gui.ResetOnSpawn = false
+-- Membuat Window Utama
+local Window = Rayfield:CreateWindow({
+    Name = "Chloex v1.1.0 | Fishing Module",
+    LoadingTitle = "Chloex System",
+    LoadingSubtitle = "by Assistant",
+    ConfigurationSaving = {
+        Enabled = false,
+        FolderName = nil, -- Nama folder custom jika ingin save config
+        FileName = "ChloexConfig"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink", -- Link Discord jika ada
+        RememberJoins = true
+    },
+    KeySystem = false,
+    KeySettings = {
+        Title = "Chloex Key",
+        Subtitle = "Key System",
+        Note = "No Key Needed",
+        FileName = "ChloexKey",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = {"Hello"}
+    }
+})
 
--- Main Frame
-local main = Instance.new("Frame")
-main.Parent = gui
-main.Size = UDim2.new(0, 600, 0, 360)
-main.Position = UDim2.new(0.5, -300, 0.5, -180)
-main.BackgroundColor3 = Color3.fromRGB(25,25,25)
-main.BorderSizePixel = 0
-main.Active = true
-main.Draggable = true
+-- Membuat Tab "Info"
+local InfoTab = Window:CreateTab("Info", 4483362458) -- Icon ID opsional
 
--- Sidebar
-local side = Instance.new("Frame")
-side.Parent = main
-side.Size = UDim2.new(0, 150, 1, 0)
-side.BackgroundColor3 = Color3.fromRGB(18,18,18)
-side.BorderSizePixel = 0
+InfoTab:CreateLabel("Welcome to Chloex v1.1.0")
+InfoTab:CreateLabel("Status: Undetected")
+InfoTab:CreateLabel("Game: Supported")
 
--- Title
-local title = Instance.new("TextLabel")
-title.Parent = side
-title.Size = UDim2.new(1,0,0,50)
-title.Text = "Fishing"
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 22
-title.TextColor3 = Color3.fromRGB(0,170,255)
-title.BackgroundTransparency = 1
+-- Label Real Ping (Update otomatis)
+local PingLabel = InfoTab:CreateLabel("Ping: Calculating...")
 
--- Content
-local content = Instance.new("Frame")
-content.Parent = main
-content.Position = UDim2.new(0,160,0,20)
-content.Size = UDim2.new(1,-170,1,-40)
-content.BackgroundTransparency = 1
+spawn(function()
+    while true do
+        wait(1)
+        local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+        PingLabel:Set("Real Ping: " .. ping)
+    end
+end)
 
--- Toggle creator (manual Y)
-local function Toggle(text, y)
-    local frame = Instance.new("Frame")
-    frame.Parent = content
-    frame.Size = UDim2.new(1,0,0,40)
-    frame.Position = UDim2.new(0,0,0,y)
-    frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
-    frame.BorderSizePixel = 0
+-- Membuat Tab "Fishing"
+local FishingTab = Window:CreateTab("Fishing", 4483362458)
 
-    local label = Instance.new("TextLabel")
-    label.Parent = frame
-    label.Position = UDim2.new(0,10,0,0)
-    label.Size = UDim2.new(1,-80,1,0)
-    label.Text = text
-    label.Font = Enum.Font.SourceSans
-    label.TextSize = 16
-    label.TextColor3 = Color3.fromRGB(220,220,220)
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.BackgroundTransparency = 1
+-- Section: Fishing Support
+local Section = FishingTab:CreateSection("Fishing Support")
 
-    local btn = Instance.new("TextButton")
-    btn.Parent = frame
-    btn.Size = UDim2.new(0,50,0,22)
-    btn.Position = UDim2.new(1,-60,0.5,-11)
-    btn.Text = "OFF"
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 14
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
-    btn.BorderSizePixel = 0
+-- Fitur: Auto Equip Rod
+Rayfield:Notify({
+    Title = "Chloex Loaded",
+    Content = "Fishing Module Ready.",
+    Duration = 5,
+    Image = 4483362458
+})
 
-    local on = false
-    btn.MouseButton1Click:Connect(function()
-        on = not on
-        if on then
-            btn.Text = "ON"
-            btn.BackgroundColor3 = Color3.fromRGB(0,170,255)
-        else
-            btn.Text = "OFF"
-            btn.BackgroundColor3 = Color3.fromRGB(80,80,80)
+local AutoRodToggle = FishingTab:CreateToggle({
+    Name = "Auto Equip Rod",
+    CurrentValue = false,
+    Flag = "AutoRod",
+    Callback = function(Value)
+        _G.AutoRod = Value
+        if Value then
+            spawn(function()
+                while _G.AutoRod do
+                    wait(1)
+                    local player = game.Players.LocalPlayer
+                    local character = player.Character
+                    local backpack = player.Backpack
+
+                    -- Logika untuk mencari Rod (bisa disesuaikan nama tool-nya)
+                    if character and not character:FindFirstChildWhichIsA("Tool") then
+                        for _, tool in pairs(backpack:GetChildren()) do
+                            if string.find(tool.Name:lower(), "rod") or string.find(tool.Name:lower(), "fishing") then
+                                character.Humanoid:EquipTool(tool)
+                                break
+                            end
+                        end
+                    end
+                end
+            end)
         end
-        print(text, on)
-    end)
-end
+    end
+})
 
--- Toggles
-Toggle("Show Real Ping", 0)
-Toggle("Show Fishing Panel", 50)
-Toggle("Auto Equip Rod", 100)
-Toggle("No Fishing Animations", 150)
-Toggle("Walk on Water", 200)
-Toggle("Freeze Player", 250)
+-- Fitur: No Fishing Animations
+FishingTab:CreateToggle({
+    Name = "No Fishing Animations",
+    CurrentValue = false,
+    Flag = "NoAnim",
+    Callback = function(Value)
+        _G.NoAnim = Value
+        if Value then
+            -- Menghentikan animasi karakter lokal
+            local player = game.Players.LocalPlayer
+            if player.Character:FindFirstChild("Animate") then
+                player.Character.Animate:Destroy()
+            end
+        end
+    end
+})
+
+-- Section: Fishing Features (Extra)
+local Section2 = FishingTab:CreateSection("Fishing Features")
+
+-- Fitur: Walk on Water (Simulasi Noclip di atas air)
+FishingTab:CreateToggle({
+    Name = "Walk on Water",
+    CurrentValue = false,
+    Flag = "WaterWalk",
+    Callback = function(Value)
+        _G.WaterWalk = Value
+        spawn(function()
+            while _G.WaterWalk do
+                wait()
+                local player = game.Players.LocalPlayer
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    -- Jika posisi Y rendah (di dalam air), dorong ke atas
+                    if player.Character.HumanoidRootPart.Position.Y < 5 then -- Sesuaikan tinggi air
+                        player.Character.HumanoidRootPart.Velocity = Vector3.new(player.Character.HumanoidRootPart.Velocity.X, 20, player.Character.HumanoidRootPart.Velocity.Z)
+                        player.Character.Humanoid:ChangeState("Jumping")
+                    end
+                end
+            end
+        end)
+    end
+})
+
+-- Fitur: Freeze Player
+FishingTab:CreateToggle({
+    Name = "Freeze Player",
+    CurrentValue = false,
+    Flag = "Freeze",
+    Callback = function(Value)
+        _G.Freeze = Value
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            if Value then
+                player.Character.HumanoidRootPart.Anchored = true
+            else
+                player.Character.HumanoidRootPart.Anchored = false
+            end
+        end
+    end
+})
+
+-- Tab Tambahan: Automatically (Opsional untuk kelengkapan UI)
+local AutoTab = Window:CreateTab("Automatically", 4483362458)
+AutoTab:CreateSection("Auto Farm")
+AutoTab:CreateButton({
+    Name = "Coming Soon",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Info",
+            Content = "Fitur ini akan hadir di update berikutnya.",
+            Duration = 3,
+        })
+    end
+})
