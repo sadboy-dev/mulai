@@ -1,21 +1,19 @@
---// Simple Fishing GUI (Executor Friendly)
---// UI Only | Inspired by Chloe X Style
+--// Fishing GUI FIXED VERSION
 
 local Player = game.Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
--- Destroy if exists
 if PlayerGui:FindFirstChild("FishingGUI") then
     PlayerGui.FishingGUI:Destroy()
 end
 
--- GUI
-local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FishingGUI"
+ScreenGui.Parent = PlayerGui
 ScreenGui.ResetOnSpawn = false
 
--- Main Frame
-local Main = Instance.new("Frame", ScreenGui)
+local Main = Instance.new("Frame")
+Main.Parent = ScreenGui
 Main.Size = UDim2.new(0, 620, 0, 380)
 Main.Position = UDim2.new(0.5, -310, 0.5, -190)
 Main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
@@ -30,7 +28,6 @@ Sidebar.Size = UDim2.new(0, 150, 1, 0)
 Sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
 Sidebar.BorderSizePixel = 0
 
--- Title
 local Title = Instance.new("TextLabel", Sidebar)
 Title.Size = UDim2.new(1, 0, 0, 50)
 Title.Text = "Fishing"
@@ -45,11 +42,10 @@ Content.Position = UDim2.new(0, 160, 0, 15)
 Content.Size = UDim2.new(1, -175, 1, -30)
 Content.BackgroundTransparency = 1
 
--- UI List
 local List = Instance.new("UIListLayout", Content)
 List.Padding = UDim.new(0, 10)
 
--- Toggle Function
+-- Toggle creator
 local function CreateToggle(text)
     local Toggle = Instance.new("Frame")
     Toggle.Size = UDim2.new(1, 0, 0, 45)
@@ -65,7 +61,7 @@ local function CreateToggle(text)
     Label.BackgroundTransparency = 1
     Label.Position = UDim2.new(0, 15, 0, 0)
     Label.Size = UDim2.new(1, -100, 1, 0)
-    Label.TextXAlignment = Left
+    Label.TextXAlignment = Enum.TextXAlignment.Left
 
     local Button = Instance.new("TextButton", Toggle)
     Button.Size = UDim2.new(0, 50, 0, 22)
@@ -83,7 +79,6 @@ local function CreateToggle(text)
     Instance.new("UICorner", Circle).CornerRadius = UDim.new(1, 0)
 
     local Enabled = false
-
     Button.MouseButton1Click:Connect(function()
         Enabled = not Enabled
         if Enabled then
@@ -93,28 +88,16 @@ local function CreateToggle(text)
             Button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
             Circle.Position = UDim2.new(0, 2, 0.5, -9)
         end
-
-        -- FUNCTION HERE
         print(text, Enabled)
     end)
 
     Toggle.Parent = Content
 end
 
--- Toggles (Fishing Support)
+-- Toggles
 CreateToggle("Show Real Ping")
 CreateToggle("Show Fishing Panel")
 CreateToggle("Auto Equip Rod")
 CreateToggle("No Fishing Animations")
 CreateToggle("Walk on Water")
 CreateToggle("Freeze Player")
-
--- Footer
-local Footer = Instance.new("TextLabel", Main)
-Footer.Size = UDim2.new(1, 0, 0, 25)
-Footer.Position = UDim2.new(0, 0, 1, -25)
-Footer.Text = "Chloe X | UI Mockup"
-Footer.TextSize = 12
-Footer.Font = Enum.Font.Gotham
-Footer.TextColor3 = Color3.fromRGB(120, 120, 120)
-Footer.BackgroundTransparency = 1
