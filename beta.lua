@@ -128,6 +128,21 @@ local Misc = Window:AddTab({
     Icon = "snowflake"
 })
 
+local BlatantTab = Window:MakeTab({
+    Name = "Blatant",
+    Icon = "rbxassetid://...",
+    PremiumOnly = false
+})
+
+_G.UltraPerfect = false
+
+BlatantTab:AddToggle({
+    Name = "ULTRA Auto Perfect",
+    Default = false,
+    Callback = function(v)
+        _G.UltraPerfect = v
+    end
+})
 local dcsec = Home:AddSection("Support", true)
 
 dcsec:AddParagraph({
@@ -465,15 +480,6 @@ local bts = Fishing:AddSection("Blatant")
 _G.FishingDelay = _G.FishingDelay or 1.1
 _G.Reel = _G.Reel or 1.9
 _G.FBlatant = _G.FBlatant or false
-_G.UltraPerfect = false
-
-BlatantTab:AddToggle({
-    Name = "ULTRA Auto Perfect",
-    Default = false,
-    Callback = function(v)
-        _G.UltraPerfect = v
-    end
-})
 
 function FastestFishing()
     task.spawn(function()
@@ -503,6 +509,14 @@ end
 
 function StartBlatantFishing()
     _G.FBlatant = true
+    _G.UltraPerfect = false
+    BlatantTab:AddToggle({
+        Name = "ULTRA Auto Perfect",
+        Default = false,
+        Callback = function(v)
+        _G.UltraPerfect = v
+        end
+    })
 
     pcall(function()
         EquipToolFromHotbar:FireServer(1)
@@ -2505,6 +2519,28 @@ game:GetService("RunService").RenderStepped:Connect(function()
         for _,v in pairs(gui:GetDescendants()) do
             if v:IsA("Frame") and v.Name:lower():find("timing") then
                 v.Visible = false
+            end
+        end
+    end
+end)
+
+-- // ULTRA BLATANT AUTO PERFECT (CLIENT HOOK)
+task.spawn(function()
+    for _,func in pairs(getgc(true)) do
+        if type(func) == "function" then
+            local info = debug.getinfo(func)
+            if info and info.name then
+                local name = info.name:lower()
+                if name:find("perfect") or name:find("timing") or name:find("check") then
+                    pcall(function()
+                        hookfunction(func, function(...)
+                            if _G.UltraPerfect then
+                                return true
+                            end
+                            return func(...)
+                        end)
+                    end)
+                end
             end
         end
     end
