@@ -317,7 +317,7 @@ fsh:AddToggle({
                 pcall(function()
                     EquipToolFromHotbar:FireServer(1)
                 end)
-                task.wait(0.3)
+                task.wait(0.1)
                 StartLegitFishing(enabled)
             end)
         else
@@ -573,6 +573,128 @@ bts:AddButton({
     Title = "Manual Fix Stuck",
     Callback = function()
         RecoveryFishing()
+        AIKO:MakeNotify({
+            Title = "Aikoware",
+            Description = "| Manual Fix",
+            Content = "Stuck Fixed",
+            Delay = 2
+        })
+    end
+})
+
+local bts2 = Fishing:AddSection("Blatant2")
+
+_G.FishingDelay = _G.FishingDelay or 1.1
+_G.Reel = _G.Reel or 1.9
+_G.FBlatant = _G.FBlatant or false
+
+function FastestFishing2()
+    task.spawn(function()
+        pcall(function()
+            CancelFishingInputs:InvokeServer()
+        end)
+
+        local serverTime = workspace:GetServerTimeNow()
+
+        pcall(function()
+            ChargeFishingRod:InvokeServer(serverTime)
+        end)
+
+        pcall(function()
+            RequestFishingMinigame:InvokeServer(-1, 0.999)
+        end)
+
+        task.wait(_G.FishingDelay)
+
+        pcall(function()
+            FishingCompleted:FireServer()
+        end)
+    end)
+end
+
+function StartBlatantFishing2()
+    _G.FBlatant = true
+
+    pcall(function()
+        EquipToolFromHotbar:FireServer(1)
+    end)
+
+    LocalPlayer:SetAttribute("Loading", nil)
+
+    task.spawn(function()
+        task.wait(0.5) -- Wait for rod to equip
+
+        while _G.FBlatant do
+            FastestFishing2()
+            task.wait(_G.Reel)
+        end
+    end)
+end
+
+function StopBlatantFishing2()
+    _G.FBlatant = false
+    LocalPlayer:SetAttribute("Loading", false)
+end
+
+function RecoveryFishing2()
+    task.spawn(function()
+        pcall(function()
+            CancelFishingInputs:InvokeServer()
+        end)
+
+        LocalPlayer:SetAttribute("Loading", nil)
+        task.wait(0.05)
+        LocalPlayer:SetAttribute("Loading", false)
+    end)
+end
+
+function SetFishingDelay2(delay)
+    local num = tonumber(delay)
+    if num and num > 0 then
+        _G.FishingDelay = num
+    end
+end
+
+function SetReelDelay2(delay)
+    local num = tonumber(delay)
+    if num and num > 0 then
+        _G.Reel = num
+    end
+end
+
+bts2:AddToggle({
+    Title = "Blatant Fishing2",
+    Content = "",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            StartBlatantFishing2()
+        else
+            StopBlatantFishing2()
+        end
+    end
+})
+
+bts2:AddInput({
+    Title = "Fishing Delay",
+    Placeholder = "1.1",
+    Callback = function(value)
+        SetFishingDelay2(value)
+    end
+})
+
+bts2:AddInput({
+    Title = "Reel Delay",
+    Placeholder = "1.9",
+    Callback = function(value)
+        SetReelDelay2(value)
+    end
+})
+
+bts2:AddButton({
+    Title = "Manual Fix Stuck",
+    Callback = function()
+        RecoveryFishing2()
         AIKO:MakeNotify({
             Title = "Aikoware",
             Description = "| Manual Fix",
