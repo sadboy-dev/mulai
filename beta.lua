@@ -1,74 +1,95 @@
---[[
-FIXED beta.lua
-Tujuan: memastikan SCRIPT SELALU MUNCUL (UI tampil)
-Strategi: loader aman (pcall) + fallback + notifikasi
---]]
-
--- === BOOTSTRAP (ANTI-CRASH) ===
-warn("[Aikoware] beta.lua start")
+-- DELTA EXECUTOR FIXED beta.lua
+warn("[Aikoware] Delta beta.lua start")
 
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
-local function notify(title, desc, content)
-    pcall(function()
-        local AIKO = _G.AIKO
-        if AIKO and AIKO.MakeNotify then
-            AIKO:MakeNotify({ Title = title, Description = desc, Content = content, Delay = 4 })
-        else
-            warn(title, desc, content)
-        end
-    end)
-end
+-- === LOAD UI LIBRARY (AMAN UNTUK DELTA) ===
+local AIKO
+local ok, err = pcall(function()
+    AIKO = loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/sadboy-dev/mulai/refs/heads/main/libary.lua"
+    ))()
+end)
 
--- === SAFE HTTP GET ===
-local function safeLoad(url)
-    local ok, res = pcall(function()
-        return loadstring(game:HttpGet(url))()
-    end)
-    if not ok then
-        warn("[Aikoware] Failed to load:", url)
-        warn(res)
-        return nil, res
-    end
-    return res
-end
-
--- === LOAD UI LIBRARY (WAJIB) ===
-local AIKO, err = safeLoad("https://raw.githubusercontent.com/sadboy-dev/mulai/refs/heads/main/libary.lua")
-if not AIKO then
-    notify("Aikoware", "Error", "Library gagal load. Cek URL / koneksi.")
+if not ok or not AIKO then
+    warn("[Aikoware] Library gagal load")
     return
 end
 
-_G.AIKO = AIKO
-
--- === WINDOW ===
+-- === UI ===
 local Window = AIKO:Window({
-    Title   = "Aikoware | Fish It",
-    Footer  = "beta (fixed)",
-    Version = 1,
+    Title = "Aikoware | Fish It",
+    Footer = "Delta Edition",
+    Version = 1
 })
 
-notify("Aikoware", "Status", "UI berhasil dibuat")
+AIKO:MakeNotify({
+    Title = "Aikoware",
+    Description = "Status",
+    Content = "Delta compatible UI loaded",
+    Delay = 4
+})
 
--- === LOAD MAIN SCRIPT DENGAN AMAN ===
--- Semua fitur (termasuk Ultra Perfect) ada di main.lua
-local MAIN_URL = "https://raw.githubusercontent.com/sadboy-dev/mulai/refs/heads/main/main.lua"
+-- === TAB ===
+local Fishing = Window:MakeTab({
+    Name = "Fishing",
+    Icon = "fish",
+    PremiumOnly = false
+})
 
-local ok, mainErr = pcall(function()
-    loadstring(game:HttpGet(MAIN_URL))()
+local Blatant = Window:MakeTab({
+    Name = "Blatant",
+    Icon = "alert",
+    PremiumOnly = false
+})
+
+-- === ULTRA AUTO PERFECT (DELTA SAFE) ===
+_G.UltraPerfect = false
+
+Blatant:AddToggle({
+    Name = "Auto Perfect (Delta)",
+    Default = false,
+    Callback = function(v)
+        _G.UltraPerfect = v
+    end
+})
+
+-- === FORCE PERFECT VIA REMOTES (DELTA OK) ===
+task.spawn(function()
+    while task.wait(0.25) do
+        if _G.UltraPerfect then
+            pcall(function()
+                for _,r in pairs(
+                    ReplicatedStorage.Packages
+                        ._Index["sleitnick_net@0.2.0"]
+                        .net:GetChildren()
+                ) do
+                    if r:IsA("RemoteEvent") then
+                        local n = r.Name:lower()
+                        if n:find("fish")
+                        or n:find("catch")
+                        or n:find("perfect")
+                        or n:find("complete") then
+                            r:FireServer("Perfect", true, 100)
+                        end
+                    end
+                end
+            end)
+        end
+    end
 end)
 
-if not ok then
-    notify("Aikoware", "Error", "main.lua gagal load. Cek console.")
-    warn(mainErr)
-    return
-end
+-- === INFO ===
+Fishing:AddParagraph({
+    Title = "Info",
+    Content = "Auto Perfect versi Delta.\nTidak pakai hook / getgc.\nLebih aman untuk Delta."
+})
 
-notify("Aikoware", "Loaded", "Script siap digunakan")
-
--- === GUARD: cegah silent crash ===
-LocalPlayer.CharacterAdded:Connect(function()
-    warn("[Aikoware] CharacterAdded")
-end)
+AIKO:MakeNotify({
+    Title = "Aikoware",
+    Description = "Loaded",
+    Content = "Script siap digunakan",
+    Delay = 5
+})
