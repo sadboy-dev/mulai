@@ -553,6 +553,35 @@ bts:AddToggle({
     end
 })
 
+bts:AddInput({
+    Title = "Fishing Delay",
+    Placeholder = "1.1",
+    Callback = function(value)
+        SetFishingDelay(value)
+    end
+})
+
+bts:AddInput({
+    Title = "Reel Delay",
+    Placeholder = "1.9",
+    Callback = function(value)
+        SetReelDelay(value)
+    end
+})
+
+bts:AddButton({
+    Title = "Manual Fix Stuck",
+    Callback = function()
+        RecoveryFishing()
+        AIKO:MakeNotify({
+            Title = "Aikoware",
+            Description = "| Manual Fix",
+            Content = "Stuck Fixed",
+            Delay = 2
+        })
+    end
+})
+
 local bts = Fishing:AddSection("BlatantV2")
 
 _G.FishingDelay = _G.FishingDelay or 1.1
@@ -620,6 +649,32 @@ bts:AddToggle({
             StopUltraPerfect()
     end
 })
+
+function RecoveryFishing()
+    task.spawn(function()
+        pcall(function()
+            CancelFishingInputs:InvokeServer()
+        end)
+
+        LocalPlayer:SetAttribute("Loading", nil)
+        task.wait(0.05)
+        LocalPlayer:SetAttribute("Loading", false)
+    end)
+end
+
+function SetFishingDelay(delay)
+    local num = tonumber(delay)
+    if num and num > 0 then
+        _G.FishingDelay = num
+    end
+end
+
+function SetReelDelay(delay)
+    local num = tonumber(delay)
+    if num and num > 0 then
+        _G.Reel = num
+    end
+end
 
 bts:AddInput({
     Title = "Fishing Delay",
