@@ -514,6 +514,51 @@ function StopBlatantFishing()
     LocalPlayer:SetAttribute("Loading", false)
 end
 
+function RecoveryFishing()
+    task.spawn(function()
+        pcall(function()
+            CancelFishingInputs:InvokeServer()
+        end)
+
+        LocalPlayer:SetAttribute("Loading", nil)
+        task.wait(0.05)
+        LocalPlayer:SetAttribute("Loading", false)
+    end)
+end
+
+function SetFishingDelay(delay)
+    local num = tonumber(delay)
+    if num and num > 0 then
+        _G.FishingDelay = num
+    end
+end
+
+function SetReelDelay(delay)
+    local num = tonumber(delay)
+    if num and num > 0 then
+        _G.Reel = num
+    end
+end
+
+bts:AddToggle({
+    Title = "Blatant Fishing",
+    Content = "",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            StartBlatantFishing()
+        else
+            StopBlatantFishing()
+        end
+    end
+})
+
+local bts = Fishing:AddSection("BlatantV2")
+
+_G.FishingDelay = _G.FishingDelay or 1.1
+_G.Reel = _G.Reel or 1.9
+_G.UltraPerfect = _G.UltraPerfect or false
+
 function StartUltraPerfect()
     _G.UltraPerfect = true
 
@@ -564,50 +609,9 @@ function StopUltraPerfect()
     LocalPlayer:SetAttribute("Loading", false)
 end
 
-function RecoveryFishing()
-    task.spawn(function()
-        pcall(function()
-            CancelFishingInputs:InvokeServer()
-        end)
-
-        LocalPlayer:SetAttribute("Loading", nil)
-        task.wait(0.05)
-        LocalPlayer:SetAttribute("Loading", false)
-    end)
-end
-
-function SetFishingDelay(delay)
-    local num = tonumber(delay)
-    if num and num > 0 then
-        _G.FishingDelay = num
-    end
-end
-
-function SetReelDelay(delay)
-    local num = tonumber(delay)
-    if num and num > 0 then
-        _G.Reel = num
-    end
-end
-
-bts:AddToggle({
-    Title = "Blatant Fishing",
-    Content = "",
-    Default = false,
-    Callback = function(enabled)
-        if enabled then
-            StartBlatantFishing()
-        else
-            StopBlatantFishing()
-        end
-    end
-})
-
-
-
 bts:AddToggle({
     Title = "ULTRA Auto Perfect",
-    _G.UltraPerfect = false,
+    
     Default = false,
     Callback = function(enabled)
         if enabled then
