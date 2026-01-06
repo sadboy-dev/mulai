@@ -2570,9 +2570,3 @@ AIKO:MakeNotify({
     Content = "Game: Fish It",
     Delay = 5
 })
-
-
-
-task.spawn(function()
-    
-end)
