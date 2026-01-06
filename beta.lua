@@ -582,7 +582,7 @@ bts:AddButton({
     end
 })
 
-local bts = Fishing:AddSection("BlatantV2")
+local bts2 = Fishing:AddSection("BlatantV2")
 
 _G.FishingDelay = _G.FishingDelay or 1.1
 _G.Reel = _G.Reel or 1.9
@@ -638,18 +638,6 @@ function StopUltraPerfect()
     LocalPlayer:SetAttribute("Loading", false)
 end
 
-bts:AddToggle({
-    Title = "ULTRA Auto Perfect",
-    
-    Default = false,
-    Callback = function(enabled)
-        if enabled then
-            StartUltraPerfect()
-        else
-            StopUltraPerfect()
-    end
-})
-
 function RecoveryFishing()
     task.spawn(function()
         pcall(function()
@@ -676,7 +664,19 @@ function SetReelDelay(delay)
     end
 end
 
-bts:AddInput({
+bts2:AddToggle({
+    Title = "ULTRA Auto Perfect",
+    
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            StartUltraPerfect()
+        else
+            StopUltraPerfect()
+    end
+})
+
+bts2:AddInput({
     Title = "Fishing Delay",
     Placeholder = "1.1",
     Callback = function(value)
@@ -684,7 +684,7 @@ bts:AddInput({
     end
 })
 
-bts:AddInput({
+bts2:AddInput({
     Title = "Reel Delay",
     Placeholder = "1.9",
     Callback = function(value)
@@ -692,7 +692,7 @@ bts:AddInput({
     end
 })
 
-bts:AddButton({
+bts2:AddButton({
     Title = "Manual Fix Stuck",
     Callback = function()
         RecoveryFishing()
