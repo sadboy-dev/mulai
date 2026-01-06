@@ -98,16 +98,6 @@ local Fishing = Window:AddTab({
     Icon = "rbxassetid://100067447000453"
 })
 
-_G.UltraPerfect = false
-
-BlatantTab:AddToggle({
-    Name = "ULTRA Auto Perfect",
-    Default = false,
-    Callback = function(v)
-        _G.UltraPerfect = v
-    end
-})
-
 local Shop = Window:AddTab({
     Name = "Shop",
     Icon = "piggy-bank"
@@ -560,6 +550,16 @@ bts:AddToggle({
         else
             StopBlatantFishing()
         end
+    end
+})
+
+_G.UltraPerfect = false
+
+bts:AddToggle({
+    Name = "ULTRA Auto Perfect",
+    Default = false,
+    Callback = function(v)
+        _G.UltraPerfect = v
     end
 })
 
@@ -2480,31 +2480,18 @@ task.spawn(function()
 end)
 
 task.spawn(function()
-    while task.wait(0.15) do
+    while task.wait(0.2) do
         if _G.UltraPerfect then
             pcall(function()
-                local rs = game:GetService("ReplicatedStorage")
-                for _,remote in pairs(rs:GetDescendants()) do
-                    if remote:IsA("RemoteEvent") then
-                        local n = remote.Name:lower()
+                for _,v in pairs(game:GetService("ReplicatedStorage"):GetDescendants()) do
+                    if v:IsA("RemoteEvent") then
+                        local n = v.Name:lower()
                         if n:find("fish") or n:find("catch") or n:find("perfect") then
-                            remote:FireServer("Perfect", true, 100)
+                            v:FireServer("Perfect", true, 100)
                         end
                     end
                 end
             end)
-        end
-    end
-end)
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    if _G.UltraPerfect then
-        local gui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
-        if not gui then return end
-        for _,v in pairs(gui:GetDescendants()) do
-            if v:IsA("Frame") and v.Name:lower():find("timing") then
-                v.Visible = false
-            end
         end
     end
 end)
