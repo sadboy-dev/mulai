@@ -51,19 +51,28 @@ end)
 
 -- ================= AUTO FISH =================
 task.spawn(function()
-    while task.wait(0.2) do
-        if _G.AutoFishPerfect then
-            local char = LocalPlayer.Character
-            if not char then continue end
+    while task.wait(0.25) do
+        if not _G.AutoFishPerfect then continue end
 
-            local tool = char:FindFirstChildOfClass("Tool")
-            if tool then
-                pcall(function()
-                    tool:Activate() -- cast / start fishing
-                end)
+        local char = game.Players.LocalPlayer.Character
+        if not char then continue end
+
+        local tool = char:FindFirstChildOfClass("Tool")
+        if not tool then continue end
+
+        -- cari remote di dalam rod
+        for _,v in pairs(tool:GetDescendants()) do
+            if v:IsA("RemoteEvent") then
+                local n = v.Name:lower()
+                if n:find("fish")
+                or n:find("cast")
+                or n:find("start")
+                or n:find("use") then
+                    pcall(function()
+                        v:FireServer()
+                    end)
+                end
             end
         end
     end
 end)
-
--- ============
