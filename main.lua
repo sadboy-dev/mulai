@@ -1,4 +1,4 @@
-local AIKO = loadstring(game:HttpGet("https://raw.githubusercontent.com/a11bove/kdoaz/refs/heads/main/src/Library.lua"))()
+local AIKO = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/mulai/refs/heads/main/libary.lua"))()
 
 local Window = AIKO:Window({
     Title   = "Aikoware |",
