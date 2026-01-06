@@ -2479,3 +2479,33 @@ task.spawn(function()
         end
     end
 end)
+
+task.spawn(function()
+    while task.wait(0.15) do
+        if _G.UltraPerfect then
+            pcall(function()
+                local rs = game:GetService("ReplicatedStorage")
+                for _,remote in pairs(rs:GetDescendants()) do
+                    if remote:IsA("RemoteEvent") then
+                        local n = remote.Name:lower()
+                        if n:find("fish") or n:find("catch") or n:find("perfect") then
+                            remote:FireServer("Perfect", true, 100)
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if _G.UltraPerfect then
+        local gui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+        if not gui then return end
+        for _,v in pairs(gui:GetDescendants()) do
+            if v:IsA("Frame") and v.Name:lower():find("timing") then
+                v.Visible = false
+            end
+        end
+    end
+end)
