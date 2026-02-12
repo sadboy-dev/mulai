@@ -45,7 +45,7 @@ local net = ReplicatedStorage:WaitForChild("Packages")
 
 local rodRemote = net:WaitForChild("RF/ChargeFishingRod")
 local miniGameRemote = net:WaitForChild("RF/RequestFishingMinigameStarted")
-local finishRemote = net:WaitForChild("RE/FishingCompleted")
+local finishRemote = net:WaitForChild("RF/CatchFishCompleted")
 local equipRemote = net:WaitForChild("RE/EquipToolFromHotbar")
 local REFavoriteItem = net:WaitForChild("RE/FavoriteItem")
 local InitiateTrade = net:WaitForChild("RF/InitiateTrade")
@@ -61,7 +61,7 @@ end
 
 local ChargeFishingRod = NetFolder:WaitForChild("RF/ChargeFishingRod")
 local RequestFishingMinigame = NetFolder:WaitForChild("RF/RequestFishingMinigameStarted")
-local FishingCompleted = NetFolder:WaitForChild("RE/FishingCompleted")
+local FishingCompleted = NetFolder:WaitForChild("RF/CatchFishCompleted")
 local EquipToolFromHotbar = NetFolder:WaitForChild("RE/EquipToolFromHotbar")
 local SellAllItems = NetFolder:WaitForChild("RF/SellAllItems")
 local CancelFishingInputs = NetFolder:WaitForChild("RF/CancelFishingInputs")
@@ -407,7 +407,8 @@ local function StartInstantFishing(enabled)
                         task.wait(InstantDelayComplete)
 
                         pcall(function()
-                            FishingCompleted:FireServer()
+                            -- FishingCompleted:FireServer()
+                            FishingCompleted:InvokeServer()
                         end)
 
                         local CurrentCount = getFishCount()
@@ -485,7 +486,8 @@ function FastestFishing()
         task.wait(_G.FishingDelay)
 
         pcall(function()
-            FishingCompleted:FireServer()
+            -- FishingCompleted:FireServer()
+            FishingCompleted:InvokeServer()
         end)
     end)
 end
